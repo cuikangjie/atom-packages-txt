@@ -1,45 +1,48 @@
-var pkgs = require("../atom.pkg.json");
-var git = require("./git");
-var lib = require("./index");
+const get = require("./get");
+
 var shell = require("./cmd");
 var chalk = require("chalk");
+var util = require("./util");
+var readJson = require("./readJson");
 
-let localPkgs = lib.readLocalPkgPage();
+var path = require("path");
 
-pkgs = pkgs.filter(item => {
-  return localPkgs.filter(obj => item.name == obj.name).length == 0;
-});
 async function run(i) {
-  let pkg = pkgs[i];
+  let pkgs = readJson();
 
-  if (i >= pkgs.length) {
+  let list = await get();
+
+  list = list.filter(item => {
+    let i = item.indexOf("@");
+
+    let name = item.slice(0, i);
+
+    return (
+      pkgs.filter(pkg => {
+        return pkg.indexOf(name) >= 0;
+      }).length === 0
+    );
+  });
+
+  if (!list.length) {
+    console.log(chalk.blue("所有package 都已下载"));
     return;
   }
 
-  i = i + 1;
-  git
-    .download(pkg)
-    .then(() => {
-      return shell
-        .cmd(`cd ${lib.packagePath}\\${pkg.name} && yarn install`)
-        .catch(err => {
-          console.log(chalk.red(pkg.name, "初始化失败！"));
-          shell.logger(err);
-          return "";
-        });
-    })
-    .then(() => {
-      run(i);
-    })
-    .catch(err => {
-      run(i);
-      return "";
-    });
+  var jsonFilePath = path.resolve(__dirname, "../atom.pkg.txt");
+
+  util.writeFile(jsonFilePath, list.join("\n"));
+
+  let info = await shell.cmd("apm install ---packages-file " + jsonFilePath);
+
+  console.log(info);
 }
 
-if (pkgs.length === 0) {
-  console.log(chalk.blue("所有package 都已下载"));
-} else {
-  console.log(chalk.yellow(`init ${pkgs.length} package ~`));
-  run(0);
-}
+run();
+
+// if (pkgs.length === 0) {
+//   console.log(chalk.blue("所有package 都已下载"));
+// } else {
+//   console.log(chalk.yellow(`init ${pkgs.length} package ~`));
+//   run(0);
+// }
