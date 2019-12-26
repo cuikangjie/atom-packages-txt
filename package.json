@@ -1,0 +1,26 @@
+{
+  "name": "atom-package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "commit": "node src/push.js",
+    "init": "node src/update.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuikangjie/atom-package.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cuikangjie/atom-package/issues"
+  },
+  "homepage": "https://github.com/cuikangjie/atom-package#readme",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "js-beautify": "^1.8.9",
+    "ora": "^3.2.0",
+    "simple-git": "^1.107.0"
+  }
+}
