@@ -1,6 +1,7 @@
 # atom-package
 
 > 本项目 生成 atom package 配置文件，为解决不同电脑上重复下载 atom 依赖
+
 > 依赖 apm 命令 PATH = (USER HOME)/AppData/Local/atom/bin
 
 ## 使用
